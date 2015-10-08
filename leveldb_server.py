@@ -31,7 +31,11 @@ class Worker(threading.Thread):
                 ident, method, params = msg
                 params = json.loads(params)
                 if hasattr(self.db, method):
-                    data = getattr(self.db, method)(**params)
+                    func = getattr(self.db, method)
+                    try:
+                        data = func(**params)
+                    except KeyError:
+                        data = None
                     if method == 'RangeIter':
                         data = list(data)
             else:
